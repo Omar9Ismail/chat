@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+      h1 {
+        text-align: center;
+        margin: auto;
+      }
+      .container {
+        box-shadow:2px 3px 9px violet;
+        height: 500px;
+        width: 500px;
+        margin: auto;
+        display: block;
+        margin-top: 2%;
+        border-top-left-radius: 2rem;
+        border-top-right-radius: 2rem;
+        background-color: #edffec;
+      }
+
+      #form {
+        background: #f6dfeb;
+        padding: 0.25rem;
+        position: absolute;
+        margin: 0;
+        width: 500px;
+        display: none;
+        bottom: 24%;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+
+      }
+      #input {
+        border: none;
+        padding: 0 1rem;
+        flex-grow: 1;
+        border-radius: 2rem;
+        margin: 0.25rem;
+      }
+      #input:focus {
+        outline: none;
+      }
+      #form > button {
+        background: #e4bad4;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        outline: none;
+        color: #fff;
+        cursor: pointer;
+
+      }
+
+      #form0 {
+        background: #f6dfeb;
+        padding: 0.25rem;
+        position: absolute;
+        margin: 0;
+        width: 500px;
+        display: flex;
+        bottom: 24%;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+        cursor: pointer;
+      }
+      #name {
+        border: none;
+        padding: 0 1rem;
+        flex-grow: 1;
+        border-radius: 2rem;
+        margin: 0.25rem;
+      }
+      #name:focus {
+        outline: none;
+      }
+      #form0 > span {
+        background: #e4bad4;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        outline: none;
+        color: #fff;
+      }
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        border-top-left-radius: 2rem;
+        border-top-right-radius: 2rem;
+
+      }
+      #messages > li {
+        padding: 0.5rem 1rem;
+        border-top-left-radius: 2rem;
+        border-top-right-radius: 2rem;
+
+      }
+
+      #messages > li:nth-child(odd) {
+        background: #efefef;
+        border-top-left-radius: 2rem;
+        border-top-right-radius: 2rem;
+        border-bottom-left-radius:2rem ;
+        border-bottom-right-radius:2rem ;
+
+
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <ul id="messages"></ul>
+
+      <div id="con">
+        <h1>
+          welcome to OUR Chat
+        </h1>
+        <span></span>
+        <form id="form0">
+          <input id="name" />
+          <span onclick="takename()">Log In <img src="https://cdn.shopify.com/s/files/1/0101/6368/3392/t/17/assets/account.png" height="22" width="22"></span>
+        </form>
+      </div>
+
+      <form id="form" action="">
+        <input id="input" autocomplete="off" />
+        <span onclick="addemoj(e ='&#128512;')"> &#128512; </span>
+        <button>Send <img src="https://static.thenounproject.com/png/3084968-200.png" height="18" width="18"></button>
+      </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+      var socket = io();
+
+      function addemoj(e) {
+        document.getElementById("input").value += e;
+      }
+
+      var names = ["thanaa", "hala", "heba", "sara"];
+      var colors = ["green", "red", "yellow", "blue"];
+      var name = "";
+      var color = "";
+      function takename() {
+        let nameval = document.getElementById("name").value;
+        if (names.includes(nameval)) {
+          name = nameval;
+          color = colors[names.indexOf(name)];
+
+          document.getElementById("con").style.display = "none";
+          document.getElementById("form").style.display = "flex";
+        }
+      }
+
+
+      var messages = document.getElementById("messages");
+      var form = document.getElementById("form");
+      var input = document.getElementById("input");
+
+      form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        if (input.value) {
+          let msg = {
+            name: name,
+            color: color,
+            value: input.value
+            
+          };
+          socket.emit("chat message", msg);
+          input.value = "";
+          
+        }
+      });
+
+      socket.on("chat message", function(msg) {
+        var item = document.createElement("li");
+        var today = new Date();
+        var time = today.toLocaleTimeString();
+        item.innerHTML =
+          "<span style='color:" +
+          msg.color +
+          ";'>" +
+          msg.name +
+          " : </span>" +
+          " " +
+          msg.value+" <br> sent at "+time;
+          
+        // item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+        
+      }
+
+      );
+    </script>
+  </body>
+</html>
