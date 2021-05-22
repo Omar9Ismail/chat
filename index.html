@@ -118,6 +118,14 @@
     </style>
   </head>
   <body>
+    <input type="color" id="colorSelector">
+    <input type="button" id="colorButton" value="select color" onclick="changeColor()">
+    <script>
+      function changeColor(){
+        let color = getElementById('colorSelector').value;
+        document.body.style.backgroundColor = color;
+      }
+    </script>
     <div class="container">
       <ul id="messages"></ul>
 
